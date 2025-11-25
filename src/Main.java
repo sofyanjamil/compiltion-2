@@ -48,13 +48,15 @@ public class Main
 				/****************************************/
 				/* [6] Check for syntax errors          */
 				/****************************************/
-				if (p.errorLine >= 0)
+				if (p.errorLine > 0)
 				{
-					fileWriter.format("ERROR(%d)\n", p.errorLine);
+					// Syntax error occurred during parsing
+					fileWriter.print("ERROR(" + p.errorLine + ")");
 				}
 				else
 				{
-					fileWriter.println("OK");
+					// Parsing successful
+					fileWriter.print("OK");
 					
 					/*************************/
 					/* [7] Print the AST ... */
@@ -62,39 +64,42 @@ public class Main
 					if (ast != null)
 					{
 						ast.printMe();
+						
+						/*************************************/
+						/* [8] Finalize AST GRAPHIZ DOT file */
+						/*************************************/
+						AST_GRAPHVIZ.getInstance().finalizeFile();
 					}
-					
-					/*************************************/
-					/* [8] Finalize AST GRAPHIZ DOT file */
-					/*************************************/
-					AST_GRAPHVIZ.getInstance().finalizeFile();
 				}
 			}
 			catch (Exception e)
 			{
-				// Syntax error occurred
-				if (p.errorLine >= 0)
+				// Syntax error - parser threw exception
+				if (p.errorLine > 0)
 				{
-					fileWriter.format("ERROR(%d)\n", p.errorLine);
+					fileWriter.print("ERROR(" + p.errorLine + ")");
 				}
 				else
 				{
-					fileWriter.format("ERROR(%d)\n", l.getLine());
+					// Fallback: use current lexer line
+					fileWriter.print("ERROR(" + l.getLine() + ")");
 				}
 			}
 			
 			/*************************/
 			/* [9] Close output file */
 			/*************************/
+			fileWriter.println();
 			fileWriter.close();
     	}
 		catch (Exception e)
 		{
-			// Lexical error - file contains "ERROR" for lexical errors
+			// Lexical error - output just ERROR
 			try
 			{
 				PrintWriter errorWriter = new PrintWriter(outputFileName);
-				errorWriter.println("ERROR");
+				errorWriter.print("ERROR");
+				errorWriter.println();
 				errorWriter.close();
 			}
 			catch (Exception ex)

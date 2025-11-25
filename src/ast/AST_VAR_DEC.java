@@ -11,15 +11,6 @@ public class AST_VAR_DEC extends AST_DEC
 	{
 		serialNumber = AST_Node_Serial_Number.getFresh();
 		this.line = line;
-		
-		if (initExp != null) {
-			System.out.format("====================== varDec -> type ID( %s ) ASSIGN exp SEMICOLON\n", name);
-		} else if (newExp != null) {
-			System.out.format("====================== varDec -> type ID( %s ) ASSIGN newExp SEMICOLON\n", name);
-		} else {
-			System.out.format("====================== varDec -> type ID( %s ) SEMICOLON\n", name);
-		}
-		
 		this.type = type;
 		this.name = name;
 		this.initExp = initExp;
@@ -28,18 +19,13 @@ public class AST_VAR_DEC extends AST_DEC
 	
 	public void printMe()
 	{
-		System.out.format("AST NODE VAR DEC( %s )\n", name);
 		if (type != null) type.printMe();
 		if (initExp != null) initExp.printMe();
 		if (newExp != null) newExp.printMe();
 		
-		AST_GRAPHVIZ.getInstance().logNode(
-			serialNumber,
-			String.format("VAR DEC\n(%s)", name));
-		
+		AST_GRAPHVIZ.getInstance().logNode(serialNumber, String.format("VAR DEC\\n(%s)", name));
 		if (type != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, type.serialNumber);
 		if (initExp != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, initExp.serialNumber);
 		if (newExp != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, newExp.serialNumber);
 	}
 }
-

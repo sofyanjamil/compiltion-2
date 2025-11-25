@@ -4,13 +4,11 @@ public abstract class AST_Node
 {
 	/*******************************************/
 	/* The serial number is for debug purposes */
-	/* In particular, it can help in creating  */
-	/* a graphviz dot format of the AST ...    */
 	/*******************************************/
 	public int serialNumber;
 	
 	/******************************/
-	/* The line number in source  */
+	/* Line number in source file */
 	/******************************/
 	public int line;
 	
@@ -22,4 +20,3 @@ public abstract class AST_Node
 		System.out.print("AST NODE UNKNOWN\n");
 	}
 }
-

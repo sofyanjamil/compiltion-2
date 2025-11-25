@@ -10,13 +10,6 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	{
 		serialNumber = AST_Node_Serial_Number.getFresh();
 		this.line = line;
-		
-		if (exp != null) {
-			System.out.print("====================== stmt -> var ASSIGN exp SEMICOLON\n");
-		} else {
-			System.out.print("====================== stmt -> var ASSIGN newExp SEMICOLON\n");
-		}
-		
 		this.var = var;
 		this.exp = exp;
 		this.newExp = newExp;
@@ -24,18 +17,13 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	
 	public void printMe()
 	{
-		System.out.print("AST NODE STMT ASSIGN\n");
 		if (var != null) var.printMe();
 		if (exp != null) exp.printMe();
 		if (newExp != null) newExp.printMe();
 		
-		AST_GRAPHVIZ.getInstance().logNode(
-			serialNumber,
-			"ASSIGN\n:=");
-		
+		AST_GRAPHVIZ.getInstance().logNode(serialNumber, "ASSIGN");
 		if (var != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, var.serialNumber);
 		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, exp.serialNumber);
 		if (newExp != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, newExp.serialNumber);
 	}
 }
-

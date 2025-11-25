@@ -10,8 +10,6 @@ public class AST_EXP_BINOP extends AST_EXP
 	{
 		serialNumber = AST_Node_Serial_Number.getFresh();
 		this.line = line;
-		System.out.format("====================== exp -> exp %s exp\n", op);
-		
 		this.left = left;
 		this.right = right;
 		this.op = op;
@@ -19,16 +17,11 @@ public class AST_EXP_BINOP extends AST_EXP
 	
 	public void printMe()
 	{
-		System.out.format("AST NODE EXP BINOP( %s )\n", op);
 		if (left != null) left.printMe();
 		if (right != null) right.printMe();
 		
-		AST_GRAPHVIZ.getInstance().logNode(
-			serialNumber,
-			String.format("BINOP\n(%s)", op));
-		
+		AST_GRAPHVIZ.getInstance().logNode(serialNumber, String.format("BINOP\\n(%s)", op));
 		if (left != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, left.serialNumber);
 		if (right != null) AST_GRAPHVIZ.getInstance().logEdge(serialNumber, right.serialNumber);
 	}
 }
-
