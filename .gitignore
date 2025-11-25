@@ -1,0 +1,22 @@
+# Context files (PDFs for reference only)
+context-files/
+
+# Generated files
+bin/
+src/Lexer.java
+src/Parser.java
+src/TokenNames.java
+
+# Output files
+output/
+PARSER
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+

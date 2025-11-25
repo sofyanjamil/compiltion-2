@@ -1,6 +1,6 @@
 package ast;
 
-public class AstNodeSerialNumber
+public class AST_Node_Serial_Number
 {
 	/*******************************************/
 	/* The serial number is for debug purposes */
@@ -12,23 +12,22 @@ public class AstNodeSerialNumber
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
 	/**************************************/
-	private static AstNodeSerialNumber instance = null;
+	private static AST_Node_Serial_Number instance = null;
 
 	/*****************************/
 	/* PREVENT INSTANTIATION ... */
 	/*****************************/
-	protected AstNodeSerialNumber() {}
+	protected AST_Node_Serial_Number() {}
 
 	/******************************/
 	/* GET SINGLETON INSTANCE ... */
 	/******************************/
-	private static AstNodeSerialNumber getInstance()
+	private static AST_Node_Serial_Number getInstance()
 	{
 		if (instance == null)
 		{
-			instance = new AstNodeSerialNumber();
+			instance = new AST_Node_Serial_Number();
 			instance.serialNumber = 0;
-			
 		}
 		return instance;
 	}
@@ -46,6 +45,7 @@ public class AstNodeSerialNumber
 	/**********************************/
 	public static int getFresh()
 	{
-		return AstNodeSerialNumber.getInstance().get();
+		return AST_Node_Serial_Number.getInstance().get();
 	}
 }
+

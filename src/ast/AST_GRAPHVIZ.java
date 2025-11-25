@@ -2,7 +2,7 @@ package ast;
 
 import java.io.PrintWriter;
 
-public class AstGraphviz
+public class AST_GRAPHVIZ
 {
 	/***********************/
 	/* The file writer ... */
@@ -12,21 +12,21 @@ public class AstGraphviz
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
 	/**************************************/
-	private static AstGraphviz instance = null;
+	private static AST_GRAPHVIZ instance = null;
 
 	/*****************************/
 	/* PREVENT INSTANTIATION ... */
 	/*****************************/
-	private AstGraphviz() {}
+	private AST_GRAPHVIZ() {}
 
 	/******************************/
 	/* GET SINGLETON INSTANCE ... */
 	/******************************/
-	public static AstGraphviz getInstance()
+	public static AST_GRAPHVIZ getInstance()
 	{
 		if (instance == null)
 		{
-			instance = new AstGraphviz();
+			instance = new AST_GRAPHVIZ();
 			
 			/****************************/
 			/* Initialize a file writer */
@@ -55,7 +55,7 @@ public class AstGraphviz
 	/***********************************/
 	/* Log node in graphviz dot format */
 	/***********************************/
-	public void logNode(int nodeSerialNumber,String nodeName)
+	public void logNode(int nodeSerialNumber, String nodeName)
 	{
 		fileWriter.format(
 			"v%d [label = \"%s\"];\n",
@@ -66,9 +66,7 @@ public class AstGraphviz
 	/***********************************/
 	/* Log edge in graphviz dot format */
 	/***********************************/
-	public void logEdge(
-		int fatherNodeSerialNumber,
-		int sonNodeSerialNumber)
+	public void logEdge(int fatherNodeSerialNumber, int sonNodeSerialNumber)
 	{
 		fileWriter.format(
 			"v%d -> v%d;\n",
@@ -85,3 +83,4 @@ public class AstGraphviz
 		fileWriter.close();
 	}
 }
+

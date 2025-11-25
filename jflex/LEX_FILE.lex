@@ -5,15 +5,15 @@
 /*************/
 /* USER CODE */
 /*************/
-   
+
 import java_cup.runtime.*;
 
 /******************************/
 /* DOLLAR DOLLAR - DON'T TOUCH! */
 /******************************/
-      
+
 %%
-   
+
 /************************************/
 /* OPTIONS AND DECLARATIONS SECTION */
 /************************************/
@@ -30,7 +30,7 @@ import java_cup.runtime.*;
 /********************************************************************/
 %line
 %column
-    
+
 /*******************************************************************************/
 /* Note that this has to be the EXACT same name of the class the CUP generates */
 /*******************************************************************************/
@@ -40,7 +40,7 @@ import java_cup.runtime.*;
 /* CUP compatibility mode interfaces with a CUP generated parser. */
 /******************************************************************/
 %cup
-   
+
 /****************/
 /* DECLARATIONS */
 /****************/
@@ -60,22 +60,33 @@ import java_cup.runtime.*;
 	/*******************************************/
 	/* Enable line number extraction from main */
 	/*******************************************/
-	public int getLine()    { return yyline + 1; }
+	public int getLine() { return yyline + 1; } 
 
 	/**********************************************/
 	/* Enable token position extraction from main */
 	/**********************************************/
-	public int getTokenStartPosition() { return yycolumn + 1; }
+	public int getTokenStartPosition() { return yycolumn + 1; } 
 %}
 
 /***********************/
 /* MACRO DECLARATIONS */
 /***********************/
+
 LineTerminator	= \r|\n|\r\n
-WhiteSpace		= {LineTerminator} | [ \t\f]
-INTEGER			= 0 | [1-9][0-9]*
-ID				= [a-zA-Z]+
-   
+WhiteSpace		= {LineTerminator} | [ \t]+
+INTEGER			= [0-9][0-9]* // to prevent integer starting from 0
+LETTER         	= [A-Za-z]
+DIGIT          = [0-9]
+ID             = {LETTER}({LETTER}|{DIGIT})*
+STRING 			= \"{LETTER}*\"
+
+COMMENT_CHAR   = {LETTER}|{DIGIT}|[ \t]|[\(\)\[\]\{\}\?\!\+\-\*\/\.\;]     //for good // comments
+BAD_LINE_CHAR         = [^\r\nA-Za-z0-9 \t\(\)\[\]\{\}\?\!\+\-\*\/\.\;]  //used for bad // comments
+COMMENT_CHAR_V2  = {LETTER}|{DIGIT}|[ \t]|{LineTerminator}|[\(\)\[\]\{\}\?\!\+\-\*\/\.\;] //used for /* comments
+
+%state COMMENT
+
+
 /******************************/
 /* DOLLAR DOLLAR - DON'T TOUCH! */
 /******************************/
@@ -85,7 +96,7 @@ ID				= [a-zA-Z]+
 /************************************************************/
 /* LEXER matches regular expressions to actions (Java code) */
 /************************************************************/
-   
+
 /**************************************************************/
 /* YYINITIAL is the state at which the lexer begins scanning. */
 /* So these regular expressions will only be matched if the   */
@@ -93,25 +104,64 @@ ID				= [a-zA-Z]+
 /**************************************************************/
 
 <YYINITIAL> {
+{WhiteSpace}		{ /* just skip what was found, do nothing */ }
+"//"[^\r\n]*{BAD_LINE_CHAR}[^\r\n]*{LineTerminator}   { throw new Error("COMMENT ERROR"); }   //comment error
+"//"{COMMENT_CHAR}*{LineTerminator}            { /* skip */ }
 
-"if"				{ return symbol(TokenNames.IF);}
-"="					{ return symbol(TokenNames.EQ);}
-"."					{ return symbol(TokenNames.DOT);}
+"/*"                    { yybegin(COMMENT); }
+
+
+"class"  			{ return symbol(TokenNames.CLASS); } //KEYWORDS:
+"nil"     			{ return symbol(TokenNames.NIL); }
+"array"  			{ return symbol(TokenNames.ARRAY); }
+"while"  			{ return symbol(TokenNames.WHILE); }
+"int"     			{ return symbol(TokenNames.TYPE_INT); }
+"void"    			{ return symbol(TokenNames.TYPE_VOID); }
+"extends" 			{ return symbol(TokenNames.EXTENDS); }
+"return"  			{ return symbol(TokenNames.RETURN); }
+"new"     			{ return symbol(TokenNames.NEW); }
+"if"      			{ return symbol(TokenNames.IF); }
+"else"    			{ return symbol(TokenNames.ELSE); }
+"string"  			{ return symbol(TokenNames.TYPE_STRING); }
+
+":="   				{ return symbol(TokenNames.ASSIGN); }
+"["    				{ return symbol(TokenNames.LBRACK); }
+"]"    				{ return symbol(TokenNames.RBRACK); }
+"{"   				{ return symbol(TokenNames.LBRACE); }
+"}"    				{ return symbol(TokenNames.RBRACE); }
+","    				{ return symbol(TokenNames.COMMA); }
+"."   			 	{ return symbol(TokenNames.DOT); }
+";"   				{ return symbol(TokenNames.SEMICOLON); }
+"<"    			{ return symbol(TokenNames.LT); }
+">"    			{ return symbol(TokenNames.GT); }
+"="    			{ return symbol(TokenNames.EQ); }
 "+"					{ return symbol(TokenNames.PLUS);}
 "-"					{ return symbol(TokenNames.MINUS);}
-"*"					{ return symbol(TokenNames.TIMES);}
+"*"					{ return symbol(TokenNames.TIMES);} 
 "/"					{ return symbol(TokenNames.DIVIDE);}
-":="				{ return symbol(TokenNames.ASSIGN);}
 "("					{ return symbol(TokenNames.LPAREN);}
 ")"					{ return symbol(TokenNames.RPAREN);}
-"["					{ return symbol(TokenNames.LBRACK);}
-"]"					{ return symbol(TokenNames.RBRACK);}
-"{"					{ return symbol(TokenNames.LBRACE);}
-"}"					{ return symbol(TokenNames.RBRACE);}
-";"					{ return symbol(TokenNames.SEMICOLON);}
-{ID}				{ return symbol(TokenNames.ID, yytext());}
-{INTEGER}			{ return symbol(TokenNames.INT, Integer.valueOf(yytext()));}
-{WhiteSpace}		{ /* just skip what was found, do nothing */ }
-{LineTerminator}	{ /* just skip what was found, do nothing */ }
+
+{STRING}			{String s = yytext().substring(1, yytext().length()-1);
+					return symbol(TokenNames.STRING, s);}
+
+\"[^\r\n\"]*\"   { throw new Error("string with invalid chars"); }  //Bad string handlers:
+\"[^\r\n\"]*{LineTerminator}   { throw new Error("string not closed properly via newline"); }
+\"[^\r\n\"]*    { throw new Error("string not closed properly via eof"); }
+
+{INTEGER} 			{int v = Integer.parseInt(yytext());
+					if (yytext().length() > 1 && yytext().charAt(0) == '0') {
+						throw new Error("Lexical error: Integer cannot start with 0");}
+					if (v > 32767) {throw new Error("Integer too large"); }
+					return symbol(TokenNames.INT, v);}
+
+{ID}				{ return symbol(TokenNames.ID,     yytext());}
 <<EOF>>				{ return symbol(TokenNames.EOF);}
+.					{ throw new Error("UNKOWN CHAR"); }
+}
+<COMMENT>{
+   "*/" { yybegin(YYINITIAL); }
+  {COMMENT_CHAR_V2}   { /* Skip valid comment characters */ }
+  [^]              { throw new Error("Invalid character in /* comment"); }
+  <<EOF>>          { throw new Error("Unclosed comment"); }
 }

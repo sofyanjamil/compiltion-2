@@ -1,6 +1,6 @@
 package ast;
 
-public abstract class AstNode
+public abstract class AST_Node
 {
 	/*******************************************/
 	/* The serial number is for debug purposes */
@@ -8,6 +8,11 @@ public abstract class AstNode
 	/* a graphviz dot format of the AST ...    */
 	/*******************************************/
 	public int serialNumber;
+	
+	/******************************/
+	/* The line number in source  */
+	/******************************/
+	public int line;
 	
 	/***********************************************/
 	/* The default message for an unknown AST node */
@@ -17,3 +22,4 @@ public abstract class AstNode
 		System.out.print("AST NODE UNKNOWN\n");
 	}
 }
+

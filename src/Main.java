@@ -10,7 +10,7 @@ public class Main
 		Lexer l;
 		Parser p;
 		Symbol s;
-		AstStmtList ast;
+		AST_PROGRAM ast = null;
 		FileReader fileReader;
 		PrintWriter fileWriter;
 		String inputFileName = argv[0];
@@ -41,29 +41,66 @@ public class Main
 			/***********************************/
 			/* [5] 3 ... 2 ... 1 ... Parse !!! */
 			/***********************************/
-			ast = (AstStmtList) p.parse().value;
+			try
+			{
+				ast = (AST_PROGRAM) p.parse().value;
+				
+				/****************************************/
+				/* [6] Check for syntax errors          */
+				/****************************************/
+				if (p.errorLine >= 0)
+				{
+					fileWriter.format("ERROR(%d)\n", p.errorLine);
+				}
+				else
+				{
+					fileWriter.println("OK");
+					
+					/*************************/
+					/* [7] Print the AST ... */
+					/*************************/
+					if (ast != null)
+					{
+						ast.printMe();
+					}
+					
+					/*************************************/
+					/* [8] Finalize AST GRAPHIZ DOT file */
+					/*************************************/
+					AST_GRAPHVIZ.getInstance().finalizeFile();
+				}
+			}
+			catch (Exception e)
+			{
+				// Syntax error occurred
+				if (p.errorLine >= 0)
+				{
+					fileWriter.format("ERROR(%d)\n", p.errorLine);
+				}
+				else
+				{
+					fileWriter.format("ERROR(%d)\n", l.getLine());
+				}
+			}
 			
 			/*************************/
-			/* [6] Print the AST ... */
-			/*************************/
-			ast.printMe();
-			
-			/*************************/
-			/* [7] Close output file */
+			/* [9] Close output file */
 			/*************************/
 			fileWriter.close();
-			
-			/*************************************/
-			/* [8] Finalize AST GRAPHIZ DOT file */
-			/*************************************/
-			AstGraphviz.getInstance().finalizeFile();
     	}
-			     
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			// Lexical error - file contains "ERROR" for lexical errors
+			try
+			{
+				PrintWriter errorWriter = new PrintWriter(outputFileName);
+				errorWriter.println("ERROR");
+				errorWriter.close();
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
 		}
 	}
 }
-
-
