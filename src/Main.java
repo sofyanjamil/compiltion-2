@@ -57,19 +57,6 @@ public class Main
 				{
 					// Parsing successful
 					fileWriter.print("OK");
-					
-					/*************************/
-					/* [7] Print the AST ... */
-					/*************************/
-					if (ast != null)
-					{
-						ast.printMe();
-						
-						/*************************************/
-						/* [8] Finalize AST GRAPHIZ DOT file */
-						/*************************************/
-						AST_GRAPHVIZ.getInstance().finalizeFile();
-					}
 				}
 			}
 			catch (Exception e)
@@ -89,8 +76,27 @@ public class Main
 			/*************************/
 			/* [9] Close output file */
 			/*************************/
-			fileWriter.println();
 			fileWriter.close();
+			
+			/*************************/
+			/* [7] Print the AST ... */
+			/*************************/
+			if (ast != null && p.errorLine == 0)
+			{
+				try
+				{
+					ast.printMe();
+					
+					/*************************************/
+					/* [8] Finalize AST GRAPHIZ DOT file */
+					/*************************************/
+					AST_GRAPHVIZ.getInstance().finalizeFile();
+				}
+				catch (Exception e)
+				{
+					// Ignore AST printing errors - don't affect output
+				}
+			}
     	}
 		catch (Exception e)
 		{
